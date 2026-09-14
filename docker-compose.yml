@@ -1,0 +1,22 @@
+services:
+  app:
+    image: 926337676555.dkr.ecr.eu-west-1.amazonaws.com/sneakers-app:1.0
+    container_name: sneakers-webapp
+
+    restart: unless-stopped
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - .env
+
+    environment:
+      NODE_ENV: production
+
+    networks:
+      - sneakers-network
+
+networks:
+  sneakers-network:
+    driver: bridge
