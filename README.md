@@ -1,4 +1,4 @@
-<img width="1366" height="768" alt="Screenshot (73)" src="https://github.com/user-attachments/assets/bac62929-a585-4deb-b67c-3c56c01e7a8a" /># Containerized Sneakers E-Commerce Deployment on AWS EC2 with Docker Compose, Load Balancing & HTTPS
+# Containerized Sneakers E-Commerce Deployment on AWS EC2 with Docker Compose, Load Balancing & HTTPS
 
 A full-stack sneakers e-commerce application containerized with Docker and deployed across **two Amazon EC2 instances in different Availability Zones**.
 
