@@ -209,6 +209,8 @@ Application :5000
 
 The ALB provides a single entry point for users while distributing traffic between the two EC2 instances.
 
+<img width="1366" height="768" alt="Screenshot (77)" src="https://github.com/user-attachments/assets/a77b60dd-545f-468f-b6ae-150ae2200946" />
+
 ---
 
 # 🎯 7. Target Group & Health Checks
@@ -303,6 +305,8 @@ EC2 Instances
 
 This provides a cleaner and more user-friendly URL.
 
+<img width="1366" height="768" alt="Screenshot (70)" src="https://github.com/user-attachments/assets/83163113-c333-4174-bec4-6abdefefed29" />
+
 ---
 
 # 🔒 10. HTTPS with AWS Certificate Manager
@@ -330,6 +334,7 @@ The final application is therefore accessed securely using:
 ```text
 https://sneakers.devs.surf
 ```
+<img width="1366" height="768" alt="Screenshot (75)" src="https://github.com/user-attachments/assets/8499bf14-21fe-4f74-9d0d-abcbea120d86" />
 
 ---
 
