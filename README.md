@@ -1,4 +1,4 @@
-# Sneakers E-Commerce: Docker & AWS EC2 Deployment
+# Containerized Sneakers E-Commerce Deployment on AWS EC2 with Docker Compose, Load Balancing & HTTPS
 
 A full-stack sneakers e-commerce application containerized with Docker and deployed across **two Amazon EC2 instances in different Availability Zones**.
 
