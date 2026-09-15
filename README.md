@@ -130,6 +130,7 @@ Both instances run the same application using Docker Compose.
 This provides redundancy at the application layer.
 
 If one EC2 instance becomes unavailable, the other instance can continue serving traffic.
+
 <img width="1366" height="768" alt="Screenshot (76)" src="https://github.com/user-attachments/assets/3aa28e62-a48b-4b1b-b64d-0151e6d594cd" />
 
 ---
@@ -173,6 +174,8 @@ EC2 Instance 2 ──┘
 Both application instances connect to the same MongoDB Atlas cluster using the MongoDB connection string.
 
 The database credentials and connection string are provided through environment variables rather than being hard-coded into the application.
+
+<img width="1366" height="768" alt="Screenshot (78)" src="https://github.com/user-attachments/assets/737a5ab2-d64d-4573-a815-13d3f05bc2e4" />
 
 ---
 
