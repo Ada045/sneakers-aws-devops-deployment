@@ -33,27 +33,6 @@ flowchart TD
     APP1 --> ATLAS
     APP2 --> ATLAS
 ```
-
-### Request Flow
-
-```text
-User
-  ↓
-Custom Domain
-  ↓
-Application Load Balancer
-  ↓
-Target Group
-  ↓
-Healthy EC2 Instance
-  ↓
-Docker Container
-  ↓
-MongoDB Atlas
-```
-
-The two EC2 instances run the same application, so if one instance becomes unhealthy, the load balancer can continue sending traffic to the healthy instance.
-
 ---
 
 ## 🎯 Project Goal
@@ -151,6 +130,7 @@ Both instances run the same application using Docker Compose.
 This provides redundancy at the application layer.
 
 If one EC2 instance becomes unavailable, the other instance can continue serving traffic.
+<img width="1366" height="768" alt="Screenshot (76)" src="https://github.com/user-attachments/assets/3aa28e62-a48b-4b1b-b64d-0151e6d594cd" />
 
 ---
 
