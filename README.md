@@ -307,6 +307,8 @@ This provides a cleaner and more user-friendly URL.
 
 <img width="1366" height="768" alt="Screenshot (70)" src="https://github.com/user-attachments/assets/83163113-c333-4174-bec4-6abdefefed29" />
 
+<img width="1366" height="768" alt="Screenshot (69)" src="https://github.com/user-attachments/assets/c58adc00-9457-4629-b8b6-c78c224bb6fe" />
+
 ---
 
 # 🔒 10. HTTPS with AWS Certificate Manager
@@ -366,7 +368,7 @@ The final architecture works like this:
 
 # 🧪 High Availability Test
 
-To test the redundancy of the deployment, one of the application instances can be stopped.
+To test the redundancy of the deployment, one of the application instances was stopped.
 
 Expected behaviour:
 
@@ -405,29 +407,15 @@ I configured the required IAM access so the EC2 instance could pull the Docker i
 
 ### MongoDB Atlas Connectivity
 
-The application initially could not connect to MongoDB Atlas because the EC2 environment was not permitted by the Atlas network access configuration.
+The application initially could not connect to MongoDB Atlas because the EC2 instance's IP address was not permitted in the MongoDB Atlas network access configuration.
 
-I corrected the Atlas access configuration and verified the database connection.
+I resolved this by adding the EC2 instance's IP address to the **IP Access List** in MongoDB Atlas. After allowing the EC2 instance to connect, I verified that the application could successfully establish a connection to the database.
 
 ### ALB Target Health
 
 The ALB initially reported the EC2 targets as unhealthy because traffic from the load balancer was not correctly permitted to reach the application.
 
 I reviewed the Security Group rules and corrected the network access between the ALB and EC2 instances.
-
-### HTTPS Listener
-
-I initially configured the wrong listener protocol on port 443.
-
-The listener was configured as HTTP instead of HTTPS, which caused an SSL protocol error.
-
-I corrected the listener to:
-
-```text
-HTTPS :443
-```
-
-and attached the ACM certificate.
 
 ### Direct EC2 Access
 
@@ -458,31 +446,6 @@ This project gave me practical experience with:
 * High availability
 * Troubleshooting AWS networking
 * Production-style application deployment
-
----
-
-# 📁 DevOps Repository Structure
-
-```text
-sneakers-aws-devops-deployment/
-│
-├── README.md
-│
-├── docker/
-│   ├── Dockerfile
-│   ├── docker-compose.yml
-│   └── .dockerignore
-│
-├── architecture/
-│   └── architecture.png
-│
-├── docs/
-│   └── AWS-DEPLOYMENT.md
-│
-└── .env.example
-```
-
-> **Note:** Actual environment variables and secrets are not included in this repository. The `.env` file is kept outside GitHub.
 
 ---
 
