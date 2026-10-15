@@ -1,0 +1,10 @@
+variable aws_region {}
+variable app_name {}
+variable vpc_cidr {}
+variable subnet-a {}
+variable subnet-b {}
+variable instance_type {}
+variable acm_certificate_arn {}
+variable public_key_location {}
+variable my_ip {}
+variable key_name {}
