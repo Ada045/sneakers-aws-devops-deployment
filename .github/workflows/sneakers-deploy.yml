@@ -1,0 +1,132 @@
+name: Sneakers CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "sneakers-ecommerce-website/**"
+      - "docker-compose.yml"
+      - ".github/workflows/sneakers-deploy.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: eu-west-1
+  ECR_REGISTRY: 926337676555.dkr.ecr.eu-west-1.amazonaws.com
+  ECR_REPOSITORY: sneakers-app
+
+jobs:
+  build:
+    name: Build, Scan and Push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build docker images
+        run: |
+          docker build \
+            -t "$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA" \
+            ./sneakers-ecommerce-website
+
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: 926337676555.dkr.ecr.eu-west-1.amazonaws.com/sneakers-app:${{ github.sha }}
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+
+      - name: Push imahge to Amazon ECR
+        run: |
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+
+  deploy:
+    name: Deploy to EC2
+    needs: build
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env: 
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+          chmod 400 ~/.ssh/deploy_key
+
+      - name: Deploy to both EC2 instances
+        env:
+          EC2_HOST_1: ${{ secrets.EC2_HOST_1 }}
+          EC2_HOST_2: ${{ secrets.EC2_HOST_2 }}
+          IMAGE_TAG: ${{ github.sha }}
+          ECR_REGISTRY: 926337676555.dkr.ecr.eu-west-1.amazonaws.com
+          AWS_REGION: eu-west-1
+        run: |
+          set -euo pipefail
+
+          for HOST in "$EC2_HOST_1" "$EC2_HOST_2"; do
+            echo "Deploying to $HOST"
+
+            ssh \
+              -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=accept-new \
+              "ec2-user@$HOST" \
+              "IMAGE_TAG='$IMAGE_TAG' ECR_REGISTRY='$ECR_REGISTRY' AWS_REGION='$AWS_REGION' bash -s" <<'REMOTE'
+          set -euo pipefail
+
+          cd /home/ec2-user/sneakers-app
+
+          if [ ! -f .env ]; then
+            echo "Missing /home/ec2-user/sneakers-app/.env; provision the application secrets before deploying"
+            exit 1
+          fi
+
+          aws ecr get-login-password --region "$AWS_REGION" \
+            | sudo docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+          sudo ECR_REGISTRY="$ECR_REGISTRY" \
+            IMAGE_TAG="$IMAGE_TAG" \
+            docker compose pull app  
+
+          sudo ECR_REGISTRY="$ECR_REGISTRY" \
+            IMAGE_TAG="$IMAGE_TAG" \
+            docker compose up -d --no-deps app
+
+          for attempt in $(seq 1 12); do
+            if curl --fail --silent http://localhost:5000/ >/dev/null; then
+              echo "Application is responding on this instance"
+              break
+            fi
+
+            if [ "$attempt" -eq 12 ]; then
+              echo "Application health check failed on this instance"
+              exit 1
+            fi
+
+            sleep 5
+          done
+
+          sudo docker image prune -f 
+          REMOTE
+          done
+
