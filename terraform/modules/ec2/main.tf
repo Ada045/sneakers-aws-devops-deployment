@@ -33,6 +33,11 @@ resource "aws_instance" "sneakers-app-server-a" {
   key_name                    = aws_key_pair.ssh-key.key_name
 
   user_data = file("./entry-script.sh")
+  
+  root_block_device {
+    volume_size = 12
+    volume_type = "gp3"
+  }
 
   tags = {
     Name = "${var.app_name}-server-a"
@@ -49,6 +54,11 @@ resource "aws_instance" "sneakers-app-server-b" {
   key_name                    = var.key_name
 
   user_data = file("./entry-script.sh")
+
+  root_block_device {
+    volume_size = 12
+    volume_type = "gp3"
+  }
 
   tags = {
     Name = "${var.app_name}-server-b"
