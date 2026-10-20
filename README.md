@@ -35,7 +35,7 @@ flowchart TD
 ```
 ---
 
-## 🎯 Project Goal
+## 🎯 Project Goo
 
 I wanted to deploy the application in a way that was more reliable and secure than running it on a single EC2 instance.
 
