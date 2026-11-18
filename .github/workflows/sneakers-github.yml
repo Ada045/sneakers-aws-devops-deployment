@@ -62,27 +62,6 @@ jobs:
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/sneakers-app:${{ env.IMAGE_TAG }}
-            
-      - name: Verify EC2 instance and AWS region
-        run: |
-          echo "AWS Region: $AWS_REGION"
-          echo "Instance ID: $INSTANCE_ID"
-
-          aws sts get-caller-identity
-
-          aws ec2 describe-instances \
-            --region "$AWS_REGION" \
-            --instance-ids "$INSTANCE_ID" \
-            --query "Reservations[].Instances[].{ID:InstanceId,State:State.Name}" \
-            --output table
-
-          aws ssm describe-instance-information \
-            --region "$AWS_REGION" \
-            --filters "Key=InstanceIds,Values=$INSTANCE_ID" \
-            --output table
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
 
       - name: Deploy to EC2 through SSM
         env:
