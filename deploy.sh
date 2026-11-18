@@ -18,7 +18,7 @@ REMOTE_COMMAND=$(
     "$AWS_REGION" "$REGISTRY" "$IMAGE_TAG"
 
   cat <<'REMOTE_SCRIPT'
-set -euo pipefail
+set -eu
 
 cd /home/ubuntu/sneakers-app
 
